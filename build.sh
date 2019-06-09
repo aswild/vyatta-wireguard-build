@@ -54,8 +54,9 @@ run() {
 
 # Build step functions, organized in the order a full build would run
 prepare_submodules() {
-    msg "Initializing submodules"
+    msg "Initialize submodules and LFS objects"
     run git submodule update --init
+    run git lfs pull || true
 }
 
 build_submodules() {
@@ -146,12 +147,16 @@ build_wireguard() {
     # "make module" in the WireGuard directory will update its version.h
     # and add "-dirty" since we patched the source. Avoid this by building
     # the module directly with the kernel Makefiles.
+    msg "Build WireGuard kernel module"
     run make -C "$KERNEL_DIR" M="$SRCDIR/WireGuard/src" modules
-    run install -m644 "$SRCDIR/WireGuard/src/wireguard.ko" "$THISDIR"
 
+    msg "Build WireGuard tools"
     run make -C "$SRCDIR/WireGuard/src/tools" CC="$MUSL_CC"
-    run cp -f "$SRCDIR/WireGuard/src/tools/wg" .
-    run ${CROSS_COMPILE}strip wg
+
+    msg "Install WireGuard"
+    run install -m644 "$SRCDIR/WireGuard/src/wireguard.ko" "$THISDIR"
+    run install -m755 "$SRCDIR/WireGuard/src/tools/wg" "$THISDIR"
+    run ${CROSS_COMPILE}strip "$THISDIR/wg"
 }
 
 prepare_package() {
@@ -177,6 +182,7 @@ build_package() {
     run make -j1 deb-${ER_BOARD}
     run install -m644 package/*.deb "$THISDIR"
     popd
+    msg "Built package $(ls *.deb)"
 }
 
 clean_all() {
