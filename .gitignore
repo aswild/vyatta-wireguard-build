@@ -1,0 +1,5 @@
+/OCTEON-SDK-5.1-tools/
+/sysroot/
+/wg
+/wireguard.ko
+*.deb

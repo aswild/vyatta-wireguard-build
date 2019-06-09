@@ -1,0 +1,13 @@
+[submodule "WireGuard"]
+	path = src/WireGuard
+	url = https://git.zx2c4.com/WireGuard
+[submodule "musl"]
+	path = src/musl
+	url = git://git.musl-libc.org/musl
+[submodule "libmnl"]
+	path = src/libmnl
+	url = git://git.netfilter.org/libmnl
+[submodule "vyatta-wireguard"]
+	path = src/vyatta-wireguard
+	url = https://github.com/Lochnair/vyatta-wireguard
+	branch = v2.0
