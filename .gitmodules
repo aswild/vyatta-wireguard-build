@@ -7,7 +7,11 @@
 [submodule "libmnl"]
 	path = src/libmnl
 	url = git://git.netfilter.org/libmnl
-[submodule "vyatta-wireguard"]
-	path = src/vyatta-wireguard
+[submodule "vyatta-wireguard-2.0"]
+	path = src/vyatta-wireguard-2.0
 	url = https://github.com/Lochnair/vyatta-wireguard
 	branch = v2.0
+[submodule "vyatta-wireguard-1.10"]
+	path = src/vyatta-wireguard-1.10
+	url = https://github.com/Lochnair/vyatta-wireguard
+	branch = master
