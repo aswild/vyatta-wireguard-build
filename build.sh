@@ -29,15 +29,14 @@ set -eo pipefail
 THISDIR="$(readlink -f "$(dirname "$0")")"
 SRCDIR="$THISDIR/src"
 SYSROOT="$THISDIR/sysroot"
-
-ER_BOARD="e300"
-ER_KERNEL_RELEASE="4.9.79-UBNT"
 KERNEL_DIR="$SRCDIR/kernel"
-
 TOOLCHAIN_TAR="$SRCDIR/OCTEON-SDK-5.1-tools.tar.xz"
 TOOLCHAIN_DIR="$THISDIR/OCTEON-SDK-5.1-tools"
 
-VYATTA_DIR="$SRCDIR/vyatta-wireguard-2.0"
+V2="1"
+ER_BOARD="e300"
+ER_KERNEL_RELEASE="unset"
+VYATTA_DIR="unset"
 
 # Toolchain and path configuration
 TARGET=mips64-octeon-linux-gnu
@@ -54,10 +53,12 @@ export PKG_CONFIG_PATH="$SYSROOT/lib/pkgconfig"
 # Git LFS has limited bandwidth on Github; S3 is more complicated but way cheaper
 DOWNLOAD_PREFIX='https://vyatta-wireguard-build.s3.amazonaws.com'
 declare -A DOWNLOADS
-DOWNLOADS[toolchain_file]='OCTEON-SDK-5.1-tools.tar.xz'
+DOWNLOADS[toolchain_file]="$(basename "$TOOLCHAIN_TAR")"
 DOWNLOADS[toolchain_sha256]='294315a47caf34a0fea2979ab61e3a198e020b9a95e9be361d0c45d2a17f07c4'
-DOWNLOADS[kernel_v2_file]='e300_kernel_5174690-gbd11043d0ccc.tar.xz'
-DOWNLOADS[kernel_v2_sha256]='1d3c6269ea378d21fb13cab7f7ab619c400bb4f8e3fe9fb1a50edbc42e45bac8'
+DOWNLOADS[kernel_e300_v2_file]='kernel_e300_v2_5174690-gbd11043d0ccc.tar.xz'
+DOWNLOADS[kernel_e300_v2_sha256]='1d3c6269ea378d21fb13cab7f7ab619c400bb4f8e3fe9fb1a50edbc42e45bac8'
+DOWNLOADS[kernel_e300_v1_file]='kernel_e300_v1_5167157-g2c443d3.tar.xz'
+DOWNLOADS[kernel_e300_v1_sha256]='ef355687f1f835451e003be89281d55ae9c9769fcd6d1601a77e7dba07b9e55f'
 
 # Enable parallel make
 if [[ -z "$MAKEFLAGS" ]] && type nproc &>/dev/null; then
@@ -93,6 +94,17 @@ run() {
     "$@"
 }
 
+# set up variables that are dependent on FW v1/v2 or the board type
+init_vars() {
+    if (( $V2 )); then
+        ER_KERNEL_RELEASE="4.9.79-UBNT"
+        VYATTA_DIR="$SRCDIR/vyatta-wireguard-2.0"
+    else
+        ER_KERNEL_RELEASE="3.10.107-UBNT"
+        VYATTA_DIR="$SRCDIR/vyatta-wireguard-1.10"
+    fi
+}
+
 # download a file to $SRCDIR
 # $1 should be a key where ${key}_url and ${key}_sha256 are set in the global DOWNLOADS map
 download_file() {
@@ -111,7 +123,7 @@ download_file() {
         msg "Download $filename"
         # careful, 'set -e' is active, so we can't just run wget and check $?
         wget "$DOWNLOAD_PREFIX/$filename" -O "$SRCDIR/$filename" || \
-            ( err "Failed to download '$filename'"; return 1)
+            ( err "Failed to download '$filename'"; rm -f "$SRCDIR/$filename"; return 1)
     fi
 
     msg "Verify checksum of $filename"
@@ -148,16 +160,25 @@ build_toolchain() {
 }
 
 prepare_kernel() {
-    download_file kernel_v2
+    local kver
+    if (( $V2 )); then
+        kver=kernel_${ER_BOARD}_v2
+    else
+        kver=kernel_${ER_BOARD}_v1
+    fi
+    download_file $kver
     msg "Extract kernel source"
     run rm -rf "$KERNEL_DIR"
-    run tar xf "$SRCDIR/${DOWNLOADS[kernel_v2_file]}" -C "$SRCDIR"
+    run tar xf "$SRCDIR/${DOWNLOADS[${kver}_file]}" -C "$SRCDIR"
 }
 
 build_kernel() {
     msg "Configure kernel source"
     pushd "$KERNEL_DIR"
-    run make ubnt_er_${ER_BOARD}_defconfig
+    if (( $V2 )); then
+        # v1 kernels just use .config in the kernel tar, no make *_defconfig needed
+        run make ubnt_er_${ER_BOARD}_defconfig
+    fi
     run make modules_prepare
     msg "Install kernel headers"
     run make INSTALL_HDR_PATH="$SYSROOT" headers_install
@@ -211,6 +232,10 @@ prepare_wireguard() {
     msg "Patch WireGuard with __vmalloc fix"
     # https://gist.github.com/Lochnair/805bf9ab96742d0fe1c25e4130268307
     run git apply "$SRCDIR/only-use-__vmalloc-for-now.patch"
+    if (( ! $V2 )); then
+        msg "Patch WireGuard compat.h prandom_u32_max"
+        run sed -i 's/prandom_u32_max/\0_exclude_for_e300v1/' src/compat/compat.h
+    fi
     popd
 }
 
@@ -260,6 +285,19 @@ clean_all() {
     run rm -rf "$TOOLCHAIN_DIR" "$KERNEL_DIR" sysroot wg wireguard.ko *.deb
     run git submodule foreach 'git reset --hard; git clean -dxfq'
 }
+
+# check for v1/v2 and board type variable
+while (( $# )); do
+    case "$1" in
+        v1|V1) V2=0 ;;
+        v2|V2) V2=1 ;;
+        *) break ;;
+    esac
+    shift
+done
+
+# set up globals based on v1/v2
+init_vars
 
 if (( $# == 0 )); then
     set -- submodules toolchain kernel musl libmnl wireguard package
