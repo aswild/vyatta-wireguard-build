@@ -14,13 +14,12 @@ responsible for data loss, bricked routers, getting fired because you couldn't V
 
 # Build Instructions
 ## Dependencies
-This is mostly self-contained thanks to Git submodules and LFS, but there are some standard
+This is mostly self-contained thanks to Git submodules, but there are some standard
 development packages that must be installed:
 
   * A GNU/Linux x86 (32 or 64 bit) build environment. Cygwin probably won't work. Other build
     architectures or OSes may work, but you're on your own finding a compatible Octeon toolchain.
-  * [Git LFS](https://git-lfs.github.com/)
-  * A new enough version of git to support lfs and submodules
+  * A new enough version of git to support submodules
   * GNU make and Autotools, including `make autoconf automake libtool pkg-config` (`pkg-config` may
     be provided by a `pkgconf` package on some Linux distros)
   * About 4 gigabytes of free disk space (the statically-linked Octeon toolchain is big)
@@ -46,11 +45,14 @@ The `package` step copies the newly-compiled `wireguard.ko` and `wg` binaries in
 creates the deb package.
 
 # Included Packages
+As submodules:
   * [WireGuard](https://wireguard.com) version 0.0.20190601
-  * [vyatta-wireguard](https://github.com/Lochnair/vyatta-wireguard) v2.0 branch
-  * UBNT e300 (ER-4/6P/12) kernel source from EdgeRouter firmware v2.0.1
+  * [vyatta-wireguard](https://github.com/Lochnair/vyatta-wireguard) master and v2.0 branches
   * [musl-libc](https://www.musl-libc.org/) version 1.1.22
   * [libmnl](https://netfilter.org/projects/libmnl/index.html) version 1.0.4
+
+Downloaded tarballs (formerly Git LFS objects until I ran out of Github bandwidth):
+  * UBNT e300 (ER-4/6P/12) kernel source from EdgeRouter firmware v2.0.1 and v1.10.9
   * [Cavium Octeon SDK toolchain](https://github.com/Cavium-Open-Source-Distributions/OCTEON-SDK)
     version 5.1 (based on GCC 4.7.0)
 
@@ -64,11 +66,10 @@ owners.
   * [vyatta-wireguard](https://github.com/Lochnair/vyatta-wireguard) is released under the GPL v3
   * The Linux kernel (source released by Ubiquiti hosted in this repository) is released under the
     GPL v2. The kernel tarball was extracted from the ER-4 GPL archive at
-    https://www.ui.com/download/edgemax/edgerouter-4 and included as an LFS tarball in this
-    repository to save space (just the kernel rather than the full system GPL release, and without
-    a slow layer of bzip2 compression)
+    https://www.ui.com/download/edgemax/edgerouter-4 and re-hosted on S3 to save space and slow bzip2
+    decompression.
   * The [Cavium Octeon SDK toolchain](https://github.com/Cavium-Open-Source-Distributions/OCTEON-SDK)
-    is included in this repository as an LFS tarball to save space and avoid a slow layer of bzip2.
+    is downloaded from S3, re-hosted to save space and avoid slow bzip2 decompression.
     The Cavium repo doesn't explicitly list a license, but the GNU Binutils/GCC tools should be some
     flavor of GPL.
   * [WireGuard](https://wireguard.com) is released under the GPL v2.0
