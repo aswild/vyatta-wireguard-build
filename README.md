@@ -52,7 +52,7 @@ As submodules:
   * [libmnl](https://netfilter.org/projects/libmnl/index.html) version 1.0.4
 
 Downloaded tarballs (formerly Git LFS objects until I ran out of Github bandwidth):
-  * UBNT e300 (ER-4/6P/12) kernel source from EdgeRouter firmware v2.0.1 and v1.10.9
+  * UBNT e300 (ER-4/6P/12) kernel source from EdgeRouter firmware v2.0.3 and v1.10.9
   * [Cavium Octeon SDK toolchain](https://github.com/Cavium-Open-Source-Distributions/OCTEON-SDK)
     version 5.1 (based on GCC 4.7.0)
 
