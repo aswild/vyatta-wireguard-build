@@ -25,6 +25,9 @@
 
 set -eo pipefail
 
+PACKAGE_REL_V1="1"
+PACKAGE_REL_V2="2"
+
 # Directory configuration
 THISDIR="$(readlink -f "$(dirname "$0")")"
 SRCDIR="$THISDIR/src"
@@ -37,6 +40,7 @@ V2="1"
 ER_BOARD="e300"
 ER_KERNEL_RELEASE="unset"
 VYATTA_DIR="unset"
+PACKAGE_REL="unset"
 
 # Toolchain and path configuration
 TARGET=mips64-octeon-linux-gnu
@@ -99,9 +103,11 @@ init_vars() {
     if (( $V2 )); then
         ER_KERNEL_RELEASE="4.9.79-UBNT"
         VYATTA_DIR="$SRCDIR/vyatta-wireguard-2.0"
+        PACKAGE_REL="$PACKAGE_REL_V2"
     else
         ER_KERNEL_RELEASE="3.10.107-UBNT"
         VYATTA_DIR="$SRCDIR/vyatta-wireguard-1.10"
+        PACKAGE_REL="$PACKAGE_REL_V1"
     fi
 }
 
@@ -274,7 +280,7 @@ build_package() {
     msg "Build deb package"
     run install -m644 "$THISDIR/wireguard.ko" "$ER_BOARD/lib/modules/$ER_KERNEL_RELEASE/kernel/net/"
     run install -m755 "$THISDIR/wg" "$VYATTA_DIR/$ER_BOARD/usr/bin/"
-    run sed -i "s/^Version:.*/Version: ${wireguard_ver}-1/" "$VYATTA_DIR/debian/control"
+    run sed -i "s/^Version:.*/Version: ${wireguard_ver}-${PACKAGE_REL}/" "$VYATTA_DIR/debian/control"
     run make -j1 deb-${ER_BOARD}
     run install -m644 package/*.deb "$THISDIR"
     popd
