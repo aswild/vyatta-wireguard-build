@@ -26,7 +26,7 @@
 set -eo pipefail
 
 PACKAGE_REL_V1="1"
-PACKAGE_REL_V2="2"
+PACKAGE_REL_V2="1"
 
 # Directory configuration
 THISDIR="$(readlink -f "$(dirname "$0")")"
