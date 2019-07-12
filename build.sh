@@ -26,7 +26,7 @@
 set -eo pipefail
 
 PACKAGE_REL_V1="1"
-PACKAGE_REL_V2="1"
+PACKAGE_REL_V2="2"
 
 # Directory configuration
 THISDIR="$(readlink -f "$(dirname "$0")")"
@@ -59,8 +59,8 @@ DOWNLOAD_PREFIX='https://vyatta-wireguard-build.s3.amazonaws.com'
 declare -A DOWNLOADS
 DOWNLOADS[toolchain_file]="$(basename "$TOOLCHAIN_TAR")"
 DOWNLOADS[toolchain_sha256]='294315a47caf34a0fea2979ab61e3a198e020b9a95e9be361d0c45d2a17f07c4'
-DOWNLOADS[kernel_e300_v2_file]='kernel_e300_v2_5198362-g39133fc71dd6.tar.xz'
-DOWNLOADS[kernel_e300_v2_sha256]='ee18450ba1b11dafe74dce7f207beda153a62f8043091bf31f05396e55c2bc0a'
+DOWNLOADS[kernel_e300_v2_file]='kernel_e300_v2_5206715-g3becf52aa408.tar.xz'
+DOWNLOADS[kernel_e300_v2_sha256]='003d42bed50284813b8ef54e283cd706b0894f6002926e06c3af0769b17da915'
 DOWNLOADS[kernel_e300_v1_file]='kernel_e300_v1_5167157-g2c443d3.tar.xz'
 DOWNLOADS[kernel_e300_v1_sha256]='ef355687f1f835451e003be89281d55ae9c9769fcd6d1601a77e7dba07b9e55f'
 
