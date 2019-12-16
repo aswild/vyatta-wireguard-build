@@ -21,7 +21,8 @@ if os.geteuid() != 0:
     print('Please run this script as root or with sudo')
     sys.exit(1)
 
-out = check_output(split('/opt/vyatta/bin/vyatta-op-cmd-wrapper show configuration commands'), universal_newlines=True)
+out = check_output(split('/opt/vyatta/bin/vyatta-op-cmd-wrapper show configuration commands'),
+                   universal_newlines=True)
 conflines = [line for line in out.splitlines() if 'wireguard' in line]
 
 interfaces = []
@@ -31,7 +32,8 @@ for line in conflines:
         interfaces.append(m.group(0))
 
 for intf in interfaces:
-    run('ip link delete dev %s'%intf)
+    if os.path.exists('/sys/class/net/%s'%intf):
+        run('ip link delete dev %s'%intf)
     run('ip link add dev %s type wireguard'%intf)
 
 for line in conflines:
