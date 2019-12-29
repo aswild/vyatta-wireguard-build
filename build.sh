@@ -231,8 +231,8 @@ build_libmnl() {
 }
 
 prepare_wireguard() {
-    pushd "$SRCDIR/WireGuard"
-    msg "Clean WireGuard"
+    pushd "$SRCDIR/wireguard-linux-compat"
+    msg "Clean WireGuard kernel module"
     run git reset --hard
     run git clean -dxfq
     msg "Patch WireGuard with __vmalloc fix"
@@ -250,14 +250,26 @@ build_wireguard() {
     # and add "-dirty" since we patched the source. Avoid this by building
     # the module directly with the kernel Makefiles.
     msg "Build WireGuard kernel module"
-    run make -C "$KERNEL_DIR" M="$SRCDIR/WireGuard/src" modules
+    run make -C "$KERNEL_DIR" M="$SRCDIR/wireguard-linux-compat/src" modules
 
+    msg "Install WireGuard kernel module"
+    run install -m644 "$SRCDIR/wireguard-linux-compat/src/wireguard.ko" "$THISDIR"
+}
+
+prepare_tools() {
+    pushd "$SRCDIR/wireguard-tools"
+    msg "Clean WireGuard tools"
+    run git reset --hard
+    run git clean -dxfq
+    popd
+}
+
+build_tools() {
     msg "Build WireGuard tools"
-    run make -C "$SRCDIR/WireGuard/src/tools" CC="$MUSL_CC"
+    run make -C "$SRCDIR/wireguard-tools/src" CC="$MUSL_CC"
 
-    msg "Install WireGuard"
-    run install -m644 "$SRCDIR/WireGuard/src/wireguard.ko" "$THISDIR"
-    run install -m755 "$SRCDIR/WireGuard/src/tools/wg" "$THISDIR"
+    msg "Install WireGuard tools"
+    run install -m755 "$SRCDIR/wireguard-tools/src/wg" "$THISDIR"
     run ${CROSS_COMPILE}strip "$THISDIR/wg"
 }
 
@@ -270,7 +282,7 @@ prepare_package() {
 }
 
 build_package() {
-    local wireguard_ver="$(git -C "$SRCDIR/WireGuard" describe --dirty=)"
+    local wireguard_ver="$(git -C "$SRCDIR/wireguard-linux-compat" describe --dirty= | sed 's/^v//')"
     if [[ -z "$wireguard_ver" ]]; then
         msg "ERROR: Unable to get WireGuard version"
         return 1
@@ -284,7 +296,7 @@ build_package() {
     run make -j1 deb-${ER_BOARD}
     run install -m644 package/*.deb "$THISDIR"
     popd
-    msg "Built package $(ls *.deb)"
+    msg "Built package $(ls -t *.deb | head -n1)"
 }
 
 clean_all() {
@@ -306,7 +318,7 @@ done
 init_vars
 
 if (( $# == 0 )); then
-    set -- submodules toolchain kernel musl libmnl wireguard package
+    set -- submodules toolchain kernel musl libmnl wireguard tools package
 fi
 for x in "$@"; do
     case $x in

@@ -1,6 +1,3 @@
-[submodule "WireGuard"]
-	path = src/WireGuard
-	url = https://git.zx2c4.com/WireGuard
 [submodule "musl"]
 	path = src/musl
 	url = git://git.musl-libc.org/musl
@@ -15,3 +12,9 @@
 	path = src/vyatta-wireguard-1.10
 	url = https://github.com/Lochnair/vyatta-wireguard
 	branch = master
+[submodule "src/wireguard-linux-compat"]
+	path = src/wireguard-linux-compat
+	url = https://git.zx2c4.com/wireguard-linux-compat
+[submodule "src/wireguard-tools"]
+	path = src/wireguard-tools
+	url = https://git.zx2c4.com/wireguard-tools
