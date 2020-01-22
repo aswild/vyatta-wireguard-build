@@ -59,8 +59,8 @@ DOWNLOAD_PREFIX='https://vyatta-wireguard-build.s3.amazonaws.com'
 declare -A DOWNLOADS
 DOWNLOADS[toolchain_file]="$(basename "$TOOLCHAIN_TAR")"
 DOWNLOADS[toolchain_sha256]='294315a47caf34a0fea2979ab61e3a198e020b9a95e9be361d0c45d2a17f07c4'
-DOWNLOADS[kernel_e300_v2_file]='kernel_e300_v2_5211034-g3becf52aa408.tar.xz'
-DOWNLOADS[kernel_e300_v2_sha256]='8d807cf3fc641fa874e4f58075a634624293b3350aaa88841a403f4c73f4d32a'
+DOWNLOADS[kernel_e300_v2_file]='kernel_e300_v2_5251067-g460c89c15333.tar.xz'
+DOWNLOADS[kernel_e300_v2_sha256]='a6620e75abcdbd513bd23f236fc294b1e97a390a31371b8ddb2870c187f2db5b'
 DOWNLOADS[kernel_e300_v1_file]='kernel_e300_v1_5224950-g0da2c70.tar.xz'
 DOWNLOADS[kernel_e300_v1_sha256]='d781357f1a0c9e56ddaccb6d652f16f4ae7bdeb433bb4d531ce166ddcc90d454'
 
