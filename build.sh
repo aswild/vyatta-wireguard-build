@@ -101,14 +101,17 @@ run() {
 # set up variables that are dependent on FW v1/v2 or the board type
 init_vars() {
     if (( $V2 )); then
+        KERNEL_NAME=kernel_${ER_BOARD}_v2
         ER_KERNEL_RELEASE="4.9.79-UBNT"
         VYATTA_DIR="$SRCDIR/vyatta-wireguard-2.0"
         PACKAGE_REL="$PACKAGE_REL_V2"
     else
+        KERNEL_NAME=kernel_${ER_BOARD}_v1
         ER_KERNEL_RELEASE="3.10.107-UBNT"
         VYATTA_DIR="$SRCDIR/vyatta-wireguard-1.10"
         PACKAGE_REL="$PACKAGE_REL_V1"
     fi
+    KERNEL_TAR="$SRCDIR/${DOWNLOADS[${KERNEL_NAME}_file]}"
 }
 
 # download a file to $SRCDIR
@@ -166,16 +169,10 @@ build_toolchain() {
 }
 
 prepare_kernel() {
-    local kver
-    if (( $V2 )); then
-        kver=kernel_${ER_BOARD}_v2
-    else
-        kver=kernel_${ER_BOARD}_v1
-    fi
-    download_file $kver
+    download_file $KERNEL_NAME
     msg "Extract kernel source"
     run rm -rf "$KERNEL_DIR"
-    run tar xf "$SRCDIR/${DOWNLOADS[${kver}_file]}" -C "$SRCDIR"
+    run tar xf "$KERNEL_TAR" -C "$SRCDIR"
 }
 
 build_kernel() {
@@ -280,8 +277,12 @@ build_package() {
 }
 
 clean_all() {
-    run rm -rf "$TOOLCHAIN_DIR" "$KERNEL_DIR" sysroot wg wireguard.ko *.deb
+    run rm -rf "$KERNEL_DIR" sysroot wg wireguard.ko *.deb
     run git submodule foreach 'git reset --hard; git clean -dxfq'
+}
+
+clean_extra() {
+    run rm -rf "$TOOLCHAIN_DIR" "$TOOLCHAIN_TAR" "$KERNEL_TAR"
 }
 
 # check for v1/v2 and board type variable
@@ -307,6 +308,10 @@ for x in "$@"; do
             ;;
         clean)
             clean_all
+            ;;
+        distclean)
+            clean_all
+            clean_extra
             ;;
         *)
             eval prepare_$x

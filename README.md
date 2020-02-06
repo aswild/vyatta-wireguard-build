@@ -29,7 +29,8 @@ Build the .deb package with `./build.sh`
 To install on an EdgeRouter, scp it to the router and install with `sudo dpkg -i /path/to/package.deb`
 
 ## Advanced Use
-To clean everything, run `./build.sh clean`
+To clean everything, run `./build.sh clean`. To clean everything, including the downloaded kernel
+source and toolchains, run `./build.sh distclean`.
 
 `build.sh` is organized into a series of steps, which are all executed in order by default. The
 current steps are `submodules toolchain kernel musl wireguard tools package`, plus `clean`
