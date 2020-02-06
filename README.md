@@ -20,8 +20,7 @@ development packages that must be installed:
   * A GNU/Linux x86 (32 or 64 bit) build environment. Cygwin probably won't work. Other build
     architectures or OSes may work, but you're on your own finding a compatible Octeon toolchain.
   * A new enough version of git to support submodules
-  * GNU make and Autotools, including `make autoconf automake libtool pkg-config` (`pkg-config` may
-    be provided by a `pkgconf` package on some Linux distros)
+  * GNU Make
   * At least 3 gigabytes of free disk space (the statically-linked Octeon toolchain is big)
 
 ## Easy mode
@@ -33,7 +32,7 @@ To install on an EdgeRouter, scp it to the router and install with `sudo dpkg -i
 To clean everything, run `./build.sh clean`
 
 `build.sh` is organized into a series of steps, which are all executed in order by default. The
-current steps are `submodules toolchain kernel musl libmnl wireguard tools package`, plus `clean`
+current steps are `submodules toolchain kernel musl wireguard tools package`, plus `clean`
 as a special case.
 
 Each step (besides `clean`) is split into `prepare_<step>` and `build_<step>` functions.
@@ -49,7 +48,6 @@ As submodules:
   * [WireGuard](https://wireguard.com) (latest snapshot)
   * [vyatta-wireguard](https://github.com/Lochnair/vyatta-wireguard) (master and v2.0 branches)
   * [musl-libc](https://www.musl-libc.org/) (latest release tag)
-  * [libmnl](https://netfilter.org/projects/libmnl/index.html) (latest release tag)
 
 Downloaded tarballs:
   * UBNT e300 (ER-4/6P/12) kernel source from EdgeRouter firmware extracted from UBNT's GPL release
@@ -74,4 +72,3 @@ owners.
     flavor of GPL.
   * [WireGuard](https://wireguard.com) is released under the GPL v2.0
   * [musl-libc](https://www.musl-libc.org/) is released under the MIT License
-  * [libmnl](https://netfilter.org/projects/libmnl/index.html) is released under the LGPL v2.1+

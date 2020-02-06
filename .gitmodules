@@ -1,9 +1,6 @@
 [submodule "musl"]
 	path = src/musl
 	url = git://git.musl-libc.org/musl
-[submodule "libmnl"]
-	path = src/libmnl
-	url = git://git.netfilter.org/libmnl
 [submodule "vyatta-wireguard-2.0"]
 	path = src/vyatta-wireguard-2.0
 	url = https://github.com/Lochnair/vyatta-wireguard

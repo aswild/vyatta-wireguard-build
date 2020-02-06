@@ -25,8 +25,8 @@
 
 set -eo pipefail
 
-PACKAGE_REL_V1="1"
-PACKAGE_REL_V2="1"
+PACKAGE_REL_V1="2"
+PACKAGE_REL_V2="2"
 
 # Directory configuration
 THISDIR="$(readlink -f "$(dirname "$0")")"
@@ -210,26 +210,6 @@ build_musl() {
     popd
 }
 
-prepare_libmnl() {
-    pushd "$SRCDIR/libmnl"
-    msg "Clean libmnl"
-    run git reset --hard
-    run git clean -dxfq
-    popd
-}
-
-build_libmnl() {
-    pushd "$SRCDIR/libmnl"
-    msg "Configure libmnl"
-    run ./autogen.sh
-    run ./configure CC=$MUSL_CC --prefix=$SYSROOT --host=$TARGET --enable-static --disable-shared
-    msg "Build libmnl"
-    run make
-    msg "Install libmnl"
-    run make install
-    popd
-}
-
 prepare_wireguard() {
     pushd "$SRCDIR/wireguard-linux-compat"
     msg "Clean WireGuard kernel module"
@@ -318,7 +298,7 @@ done
 init_vars
 
 if (( $# == 0 )); then
-    set -- submodules toolchain kernel musl libmnl wireguard tools package
+    set -- submodules toolchain kernel musl wireguard tools package
 fi
 for x in "$@"; do
     case $x in
