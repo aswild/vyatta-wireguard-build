@@ -52,8 +52,11 @@ As submodules:
 
 Downloaded tarballs:
   * UBNT e300 (ER-4/6P/12) kernel source from EdgeRouter firmware extracted from UBNT's GPL release
-  * [Cavium Octeon SDK toolchain](https://github.com/Cavium-Open-Source-Distributions/OCTEON-SDK)
-    version 5.1 (based on GCC 4.7.0)
+  * Cavium Octeon SDK toolchain version 5.1 (based on GCC 4.7.0). The original GitHub repo where
+    I got this is gone now, as all the Cavium code moved to
+    [Marvell's](https://github.com/MarvellEmbeddedProcessors/Octeon-Toolchain) GitHub page.
+    Unfortunately it seems that the new repo only contains source tarballs, but this build script
+    downloads from my S3 bucket.
 
 # License
 The only original content in this repository is the `build.sh` script, written by me and released
@@ -67,9 +70,8 @@ owners.
     GPL v2. The kernel tarball was extracted from the ER-4 GPL archive at
     https://www.ui.com/download/edgemax/edgerouter-4 and re-hosted on S3 to save space and slow bzip2
     decompression.
-  * The [Cavium Octeon SDK toolchain](https://github.com/Cavium-Open-Source-Distributions/OCTEON-SDK)
-    is downloaded from S3, re-hosted to save space and avoid slow bzip2 decompression.
-    The Cavium repo doesn't explicitly list a license, but the GNU Binutils/GCC tools should be some
-    flavor of GPL.
+  * The Cavium Octeon SDK toolchain is downloaded from S3, re-hosted to save space and avoid slow
+    bzip2 decompression.  The Cavium repo doesn't exist anymore, and didn't explicitly list
+    a license, but the GNU Binutils/GCC tools should be some flavor of GPL.
   * [WireGuard](https://wireguard.com) is released under the GPL v2.0
   * [musl-libc](https://www.musl-libc.org/) is released under the MIT License
