@@ -1,3 +1,13 @@
+# Upstream Vyatta WireGuard Development Moved
+There's now official build tools for WireGuard on Ubnt Vyatta routers at https://github.com/WireGuard/wireguard-vyatta-ubnt.
+Please look there for the latest WireGuard packages for your EdgeRouter.
+
+Lochnair's original vyatta-wireguard repo has been archived, and the WireGuard team is consolodating
+work on the [new official repo](https://github.com/WireGuard/wireguard-vyatta-ubnt).
+
+I will likely be deprecating/archiving the build scripts in this repo some time soon, in favor of the
+official packaging.
+
 # About
 This repository contains my scripts to build [WireGuard](https://wireguard.com) for Ubiquiti EdgeMAX
 routers.  Specifically, this builds Lochnair's https://github.com/Lochnair/vyatta-wireguard packages
